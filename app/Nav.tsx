@@ -2,7 +2,8 @@ export function Nav({ onPrimary }: { onPrimary: () => void }) {
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-card/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
-        <a href="#top" className="text-xl font-extrabold tracking-tight text-blue">
+        <a href="#top" className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-blue">
+          <img src="/icon.svg" alt="" width={26} height={26} className="rounded-md" />
           JobFit
         </a>
 
