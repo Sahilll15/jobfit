@@ -1,6 +1,6 @@
-import { experimental_evaluate as evaluate } from 'ai';
 import { NextResponse } from 'next/server';
 import { splitRequirements, type Requirement } from '../../lib';
+import { askJev } from '../../server/jev';
 import { check, tooMany } from '../../server/ratelimit';
 
 const PRICE_PER_INPUT_TOKEN = 0.042 / 1_000_000;
@@ -14,10 +14,9 @@ const STRENGTH = [
 ];
 
 async function scoreLine(line: string, cv: string) {
-  const { answers, usage } = await evaluate({
-    model: 'typesafe-ai/jev',
-    state: { requirement: line, candidateCV: cv },
-    questions: {
+  const { answers, inputTokens } = await askJev(
+    { requirement: line, candidateCV: cv },
+    {
       isRequirement: {
         type: 'boolean',
         instructions: 'Is this line a concrete skill, qualification or requirement for the role?',
@@ -40,7 +39,7 @@ async function scoreLine(line: string, cv: string) {
         instructions: 'Is this requirement essential for the role rather than nice to have?',
       },
     },
-  });
+  );
 
   return {
     requirement: {
@@ -50,7 +49,7 @@ async function scoreLine(line: string, cv: string) {
       strength: answers.strength.score,
       critical: answers.critical.probability,
     } as Requirement,
-    inputTokens: usage.inputTokens ?? 0,
+    inputTokens,
   };
 }
 
